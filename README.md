@@ -1,56 +1,47 @@
-# Welcome to your Expo app 👋
+# Spoonventory
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A mobile app for keeping track of your energy using [spoon theory](https://en.wikipedia.org/wiki/Spoon_theory). You get a daily ration of spoons, log activities that take or give spoons, and follow how you feel over time. It is built with React Native and Expo and runs on Android, iOS and the web.
 
-## Get started
+## Preview
 
-1. Install dependencies
+<p>
+  <img src="docs/startpage.png" alt="Home screen with a red ring showing 10 spoons left today, a progress bar with 2 used and a Log activity button above the tab bar" width="24%">
+  <img src="docs/activity.png" alt="Log activity screen with a list of activities such as Shower, Commute and Sleep, each showing how many spoons it takes or gives" width="24%">
+  <img src="docs/wellness.png" alt="Wellness screen with five mood faces where Good is selected, and a list of symptoms with severity dots" width="24%">
+  <img src="docs/reminders.png" alt="Remember screen with the New reminder sheet open, a text field and Cancel and Add buttons" width="24%">
+</p>
 
-   ```bash
-   npm install
-   ```
+## Content
 
-2. Start the app
+| Screen       | Content                                                                                         |
+| ------------ | ----------------------------------------------------------------------------------------------- |
+| **Home**     | Spoons left today in a ring, spoons used and carryover to tomorrow                             |
+| **Log activity** | Activities that take or give spoons. Tap to log, edit the values or add your own           |
+| **Wellness** | Daily mood, symptoms with severity, medications, a note, a 7-day trend and a monthly calendar  |
+| **Remember** | A simple list of things to remember                                                            |
+| **Settings** | Account, 4-digit app lock, daily reminder notification, backup export/import, language and clearing all data |                                                |
 
-   ```bash
-   npx expo start
-   ```
+## Tech stack
 
-In the output, you'll find options to open the app in a
+- [Expo](https://expo.dev) SDK 56 with [Expo Router](https://docs.expo.dev/router/introduction/) for file-based routing
+- React Native and TypeScript
+- `react-native-svg` for the spoon ring and the background shapes
+- AsyncStorage for storing all data locally on the device
+- `expo-notifications` for the daily reminder
+- `expo-file-system`, `expo-sharing` and `expo-document-picker` for backups
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Code decisions
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+**All data stays on the device:** There is no backend. The account, spoons, activities and wellness logs are saved with AsyncStorage. Since the data only exists on one device, there is an export and import function in Settings so you can move it to a new phone.
 
-## Get a fresh project
+**Spoons carry over between days:** When a new day starts the balance resets to the daily ration, but a surplus or deficit is carried over. If you gained more spoons than you spent you start the next day with extra, and if you went below zero you start with fewer. This is shown as "+2 tomorrow" or "-1 tomorrow" on the home screen.
 
-When you're ready, run:
+**Crash warning:** Every day's usage is saved in a history that keeps the last 90 days. If you have spent more than your daily ration two or more days in a row, including today, the Wellness screen suggests that you rest.
 
-```bash
-npm run reset-project
-```
+**Typed translations:** All text lives in one translation file. The English and Spanish translations are typed against the keys of the Swedish one, so a missing translation becomes a TypeScript error instead of empty text in the app.
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+**Migrating old saved data:** Earlier versions saved the default activities with Swedish names. Saved data can be upgraded when it is loaded, so those names are renamed to English while activities the user created themselves are left as they are.
 
-### Other setup steps
+**Custom tab bar:** The floating, rounded tab bar is built with the components from `expo-router/ui` instead of the native tab bar, since the native one can't be styled like the design. That way it looks the same on Android, iOS and the web.
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+**Hashed password and code:** The password and the app lock code are never stored in plain text. They are hashed with SHA-256 through `expo-crypto` and compared as hashes when you log in or unlock.
