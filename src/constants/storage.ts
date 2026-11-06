@@ -1,0 +1,15 @@
+export const STORAGE_KEYS = {
+  spoonData: "spoonventory.spoonData",
+  activities: "spoonventory.activities",
+  moods: "spoonventory.moods",
+  reminders: "spoonventory.reminders",
+  account: "spoonventory.account",
+  isLoggedIn: "spoonventory.isLoggedIn",
+  appLock: "spoonventory.appLock",
+  reminder: "spoonventory.reminder",
+  language: "spoonventory.language",
+  spoonHistory: "spoonventory.spoonHistory",
+  symptoms: "spoonventory.symptoms",
+  medications: "spoonventory.medications",
+  dailyLogs: "spoonventory.dailyLogs",
+} as const;
